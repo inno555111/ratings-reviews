@@ -105,8 +105,12 @@ app.post("/api/review", (req, res) => {
 });
 
 app.get("/api/reviews", (req, res) => {
-  const stmt = db.prepare(`
-    SELECT reviews.*, users.username
-    FROM reviews
-    JOIN users ON users.id = reviews.user_id
-    ORDER BY reviews.id DESC
+    const stmt = db.prepare(`
+      SELECT reviews.*, users.username
+      FROM reviews
+      JOIN users ON users.id = reviews.user_id
+      ORDER BY reviews.id DESC
+    `);
+    const reviews = stmt.all();
+    res.json(reviews);
+  });
