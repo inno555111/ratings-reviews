@@ -1,5 +1,5 @@
-const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database("./database.db");
+const Database = require('better-sqlite3');
+const db = new Database('database.db');
 
 const express = require("express");
 const bodyParser = require("body-parser");
