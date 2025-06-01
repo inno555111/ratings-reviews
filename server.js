@@ -114,3 +114,6 @@ app.get("/api/reviews", (req, res) => {
     const reviews = stmt.all();
     res.json(reviews);
   });
+  app.listen(PORT, () => {
+    console.log(`✅ Server pokrenut na portu ${PORT}`);
+  });
