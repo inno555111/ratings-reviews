@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ratings & Reviews</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1><a href="index.html">Ratings & Reviews</a></h1>
+    <nav class="desktop-nav">
+      <a href="index.html">Početna</a>
+      <a href="about.html">O nama</a>
+      <a href="contact.html">Kontakt</a>
+      <a href="profile.html">Profil</a>
+      <a href="reviews.html">Recenzije</a>
+    </nav>
+
+  </header>
+
+  <section class="section" id="home">
+    <h2>Dobrodošli!</h2>
+    <p>Ovdje možeš pregledati i ocijeniti najnovije glazbene hitove, podijeliti svoje mišljenje s drugima i otkriti najpopularnije albume i pjesme!</p>
+  </section>
+
+  <section class="section" id="search">
+    <h2>Pretraži glazbu</h2>
+    <input type="text" id="searchInput" placeholder="Unesi naziv pjesme ili albuma..." />
+    <button onclick="searchSpotify()">Pretraži</button>
+    <div id="searchResults" class="grid"></div>
+  </section>
+
+  <section class="section">
+    <h2>🎧 Viralni albumi</h2>
+    <div id="viralAlbums" class="grid"></div>
+  </section>
+
+  <!-- Album popup -->
+  <div id="albumPopupOverlay" style="display:none;" class="popup-overlay">
+    <div class="popup" style="max-height: 80vh; overflow-y: auto;">
+      <h3 id="albumPopupTitle"></h3>
+      <div id="albumTracksList"></div>
+      <button onclick="closeAlbumPopup()">Zatvori</button>
+    </div>
+  </div>
+<!-- Song rating popup -->
+<div id="popupOverlay" style="display:none;" class="popup-overlay">
+  <div class="popup">
+    <h3 id="popupTitle">Ocijeni pjesmu</h3>
+    <textarea id="popupReview" placeholder="Upiši svoju recenziju..."></textarea>
+    <input id="popupRating" type="number" min="1" max="10" placeholder="Ocjena (1-10)" />
+    <button onclick="submitPopup()">Pošalji</button>
+    <button onclick="closePopup()">Zatvori</button>
+  </div>
+</div>
+  <footer>
+    &copy; 2025 Ratings & Reviews — Powered by Spotify API
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

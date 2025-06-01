@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ratings & Reviews</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: #f0f0f0;
+      padding: 0 20px;
+    }
+    h1, h2 {
+      font-family: 'Playfair Display', serif;
+      color: #90ee90;
+    }
+    header {
+      background-color: #1DB954;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+    .hamburger {
+  font-size: 28px;
+  cursor: pointer;
+  user-select: none;
+  display: none;
+}
+
+.dropdown-menu {
+  display: flex;
+  gap: 20px;
+}
+
+.dropdown-menu a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+nav a {
+  margin-left: 20px;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+.hamburger {
+  font-size: 28px;
+  cursor: pointer;
+  user-select: none;
+  display: none;
+}
+
+.dropdown-menu {
+  display: flex;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .dropdown-menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    background-color: #1e1e1e;
+    padding: 15px;
+    border: 1px solid #333;
+    border-radius: 10px;
+    z-index: 999;
+  }
+
+  .dropdown-menu.open {
+    display: flex;
+  }
+}
+
+    .section {
+      padding: 40px 0;
+    }
+    .track-item, .review-box {
+      background-color: #1e1e1e;
+      border-radius: 8px;
+      margin: 10px 0;
+      padding: 15px;
+    }
+    .album-card {
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    }
+    .album-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+    .album-card:hover {
+      transform: scale(1.03);
+      background-color: #2a2a2a;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      background-color: #2a2a2a;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    button {
+      background-color: #3cb371;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #2e8b57;
+    }
+    footer {
+      background-color: #1e1e1e;
+      color: #aaa;
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+    }
+    #popupOverlay, #albumPopupOverlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .popup {
+      background: #2a2a2a;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+    }
+    .section-title {
+      margin-top: 0;
+    }
+    .stars {
+  display: flex;
+  gap: 5px;
+  font-size: 24px;
+  margin-top: 10px;
+  color: #888;
+  cursor: pointer;
+}
+
+.stars span:hover,
+.stars span.hover,
+.stars span.selected {
+  color: gold;
+}
+  </style>
+</head>
+<body>
+    <header>
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <h1>Ratings & Reviews</h1>
+          <div class="hamburger" onclick="toggleMenu()">☰</div>
+        </div>
+        <nav id="mainMenu" class="dropdown-menu">
+          <a href="#home">Početna</a>
+          <a href="#about">O nama</a>
+          <a href="#contact">Kontakt</a>
+          <a href="#auth">Profil</a>
+        </nav>
+      </header>
+      
+  <section id="home" class="section">
+    <h2 class="section-title">Dobrodošli!</h2>
+    <p>Ovdje možeš pregledati i ocijeniti najnovije glazbene hitove, podijeliti svoje mišljenje s drugima i otkriti najpopularnije albume i pjesme!</p>
+  </section>
+  <section id="search" class="section">
+    <h2>Pretraži glazbu</h2>
+    <input type="text" id="searchInput" placeholder="Unesi naziv pjesme ili albuma..." />
+    <button onclick="searchSpotify()">Pretraži</button>
+    <div id="searchResults" class="grid"></div>
+  </section>
+  <section class="section">
+    <h2>🎷 Viralni albumi</h2>
+    <div id="viralAlbums" class="grid"></div>
+    <div id="trackList" class="section"></div>
+    <h2>🆕 Nove recenzije korisnika</h2>
+    <div id="reviewList"></div>
+  </section>
+  <section id="about" class="section">
+    <h2>O nama</h2>
+    <p>Ratings & Reviews je zajednica ljubitelja glazbe. Naša misija je omogućiti svakome da izrazi svoje mišljenje o glazbi koju voli (ili ne voli) i da otkrije nova glazbena blaga putem recenzija drugih korisnika.</p>
+  </section>
+  <section id="contact" class="section">
+    <h2>Kontaktiraj nas</h2>
+    <form onsubmit="event.preventDefault(); alert('Poruka poslana!'); this.reset();">
+      <input type="text" placeholder="Tvoje ime" required />
+      <input type="email" placeholder="Tvoj email" required />
+      <textarea placeholder="Tvoja poruka" required></textarea>
+      <button type="submit">Pošalji</button>
+    </form>
+  </section>
+  <section id="auth" class="section">
+    <div id="authContainer"></div>
+  </section>
+  <div id="popupOverlay">
+    <div class="popup">
+      <h3 id="popupTitle"></h3>
+      <textarea id="popupReview" placeholder="Tvoja recenzija..."></textarea>
+      <div class="stars" id="starRating">
+        <span data-value="1">&#9733;</span>
+        <span data-value="2">&#9733;</span>
+        <span data-value="3">&#9733;</span>
+        <span data-value="4">&#9733;</span>
+        <span data-value="5">&#9733;</span>
+        <span data-value="6">&#9733;</span>
+        <span data-value="7">&#9733;</span>
+        <span data-value="8">&#9733;</span>
+        <span data-value="9">&#9733;</span>
+        <span data-value="10">&#9733;</span>
+      </div>
+      <input type="hidden" id="popupRating" />
+      <button onclick="submitPopup()">Spremi</button>
+      <button onclick="closePopup()">Zatvori</button>
+    </div>
+  </div>
+  <div id="albumPopupOverlay">
+    <div class="popup" style="max-height: 80vh; overflow-y: auto;">
+      <h3 id="albumPopupTitle"></h3>
+      <div id="albumTracksList"></div>
+      <button onclick="closeAlbumPopup()">Zatvori</button>
+    </div>
+  </div>
+  <footer>
+    &copy; 2025 Ratings & Reviews — Powered by Spotify API
+  </footer>
+  <script>
+    let token = "", selectedSong = "", selectedArtist = "";
+    const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+    
+    // fetch token
+    fetch("/api/token")
+      .then(res => res.json())
+      .then(data => {
+        token = data.token;
+        initApp();
+      });
+    
+    function initApp() {
+      loadAlbums();
+      loadReviews();
+      renderAuth();
+    }
+    
+    function loadAlbums() {
+      fetch("https://api.spotify.com/v1/browse/new-releases?limit=16", {
+        headers: { Authorization: "Bearer " + token }
+      })
+      .then(res => res.json())
+      .then(data => {
+        const box = document.getElementById("viralAlbums");
+        box.innerHTML = "";
+        data.albums.items.forEach(album => {
+          const div = document.createElement("div");
+          div.className = "album-card";
+          const releaseYear = album.release_date ? album.release_date.split('-')[0] : '';
+          const type = album.album_type.charAt(0).toUpperCase() + album.album_type.slice(1);
+          div.innerHTML = `
+  <img src="${album.images[0].url}" />
+  <h4>${album.name}</h4>
+  <p>${album.artists[0].name}</p>
+<small style="color:#ccc;">${type} – ${releaseYear}</small><br/>
+  <button>Ocijeni</button>
+`;
+const btn = div.querySelector("button");
+btn.addEventListener("click", () => {
+  openAlbumPopup(album.id, album.name);
+});
+          box.appendChild(div);
+        });
+      });
+    }
+    
+    function loadTracks(albumId) {
+      fetch("https://api.spotify.com/v1/albums/" + albumId, {
+        headers: { Authorization: "Bearer " + token }
+      })
+      .then(res => res.json())
+      .then(data => {
+        const box = document.getElementById("trackList");
+        box.innerHTML = "<h3>Pjesme iz albuma: " + data.name + "</h3>";
+        data.tracks.items.forEach(track => {
+          const tdiv = document.createElement("div");
+          tdiv.className = "track-item";
+          tdiv.innerHTML = `
+            <strong>${track.name}</strong>
+            <button onclick="openPopup('${track.name.replace(/'/g, "\\'")}', '${data.artists[0].name.replace(/'/g, "\\'")}')">Ocijeni</button>
+          `;
+          box.appendChild(tdiv);
+        });
+      });
+    }
+    
+    function openAlbumPopup(albumId, albumName) {
+      document.getElementById("albumPopupTitle").innerText = `Ocijeni pjesme iz albuma: ${albumName}`;
+      document.getElementById("albumPopupOverlay").style.display = "flex";
+      const list = document.getElementById("albumTracksList");
+      list.innerHTML = "<p>Učitavanje pjesama...</p>";
+    
+      fetch(`https://api.spotify.com/v1/albums/${albumId}`, {
+        headers: { Authorization: "Bearer " + token }
+      })
+      .then(res => res.json())
+      .then(album => {
+        list.innerHTML = "";
+        album.tracks.items.forEach(track => {
+          const div = document.createElement("div");
+          div.className = "track-item";
+          div.innerHTML = `
+            <strong>${track.name}</strong>
+            <button onclick="openPopup('${track.name.replace(/'/g, "\\'")}', '${album.artists[0].name.replace(/'/g, "\\'")}')">Ocijeni</button>
+          `;
+          list.appendChild(div);
+        });
+      });
+    }
+    
+    function closeAlbumPopup() {
+      document.getElementById("albumPopupOverlay").style.display = "none";
+    }
+    
+    function openPopup(song, artist) {
+      selectedSong = song;
+      selectedArtist = artist;
+      document.getElementById("popupTitle").innerText = song + " – " + artist;
+      document.getElementById("popupOverlay").style.display = "flex";
+    }
+    
+    function closePopup() {
+      document.getElementById("popupOverlay").style.display = "none";
+    }
+    
+    function submitPopup() {
+      const review = document.getElementById("popupReview").value;
+      const rating = document.getElementById("popupRating").value;
+      fetch("/api/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          song: selectedSong,
+          artist: selectedArtist,
+          review,
+          rating,
+          user_id: currentUser?.id
+        })
+      }).then(res => res.json()).then(data => {
+        alert(data.message);
+        closePopup();
+        loadReviews();
+      });
+    }
+    
+    function loadReviews() {
+      fetch("/api/reviews")
+        .then(res => res.json())
+        .then(data => {
+          const list = document.getElementById("reviewList");
+          list.innerHTML = "";
+          data.forEach(r => {
+            const box = document.createElement("div");
+            box.className = "review-box";
+            box.innerHTML = `
+              <h4>${r.song} – ${r.artist}</h4>
+              <p><strong>Ocjena:</strong> ${r.rating}/10</p>
+              <p>${r.review}</p>
+              <em>Autor: ${r.username}</em>
+            `;
+            list.appendChild(box);
+          });
+        });
+    }
+    
+    function renderAuth() {
+      const container = document.getElementById("authContainer");
+      if (!currentUser) {
+        container.innerHTML = `
+          <h3>Prijava</h3>
+          <input id="loginUser" placeholder="Korisničko ime ili email" />
+          <input id="loginPass" placeholder="Lozinka" type="password" />
+          <button onclick="login()">Prijavi se</button>
+    
+          <h3>Registracija</h3>
+          <input id="regUser" placeholder="Korisničko ime" />
+          <input id="regMail" placeholder="Email" />
+          <input id="regPass" placeholder="Lozinka" type="password" />
+          <button onclick="register()">Registriraj se</button>
+        `;
+      } else {
+        container.innerHTML = `<h3>Dobrodošao, ${currentUser.username}!</h3><button onclick="logout()">Odjava</button>`;
+      }
+    }
+    
+    function login() {
+      const u = document.getElementById("loginUser").value;
+      const p = document.getElementById("loginPass").value;
+      fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: u, password: p })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) return alert(data.error);
+        localStorage.setItem("user", JSON.stringify({ id: data.userId, username: data.username }));
+        location.reload();
+      });
+    }
+    
+    function register() {
+      const username = document.getElementById("regUser").value;
+      const email = document.getElementById("regMail").value;
+      const password = document.getElementById("regPass").value;
+      fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) return alert(data.error);
+        alert("Registracija uspješna!");
+      });
+    }
+    
+    function logout() {
+      localStorage.removeItem("user");
+      location.reload();
+    }
+    
+    function searchSpotify() {
+      const query = document.getElementById("searchInput").value.trim();
+      if (!query) return;
+    
+      const results = document.getElementById("searchResults");
+      results.innerHTML = "<p>Pretražujem...</p>";
+    
+      Promise.all([
+        fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`, {
+          headers: { Authorization: "Bearer " + token }
+        }).then(res => res.json()),
+    
+        fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=album&limit=10`, {
+          headers: { Authorization: "Bearer " + token }
+        }).then(res => res.json())
+      ])
+      .then(([trackData, albumData]) => {
+        results.innerHTML = "";
+        const combined = [];
+    
+        if (trackData.tracks?.items?.length) {
+          trackData.tracks.items.forEach(track => {
+            combined.push({
+              kind: "song",
+              type: "Song",
+              name: track.name,
+              artist: track.artists[0].name,
+              image: track.album.images[0]?.url,
+            });
+          });
+        }
+    
+        if (albumData.albums?.items?.length) {
+          albumData.albums.items.forEach(album => {
+            combined.push({
+              kind: "album",
+              type: album.album_type.charAt(0).toUpperCase() + album.album_type.slice(1),
+              name: album.name,
+              artist: album.artists[0].name,
+              image: album.images[0]?.url,
+              id: album.id
+            });
+          });
+        }
+    
+        if (!combined.length) {
+          results.innerHTML = "<p>Nema rezultata.</p>";
+          return;
+        }
+    
+        combined.forEach(item => {
+          const div = document.createElement("div");
+          div.className = "album-card";
+    
+          div.innerHTML = `
+            <img src="${item.image || ''}" />
+            <h4>${item.name}</h4>
+            <p>${item.artist}</p>
+            <small style="color:#ccc;">${item.type}</small><br/>
+            <button>Ocijeni</button>
+          `;
+    
+          const btn = div.querySelector("button");
+    
+          if (item.kind === "song") {
+            btn.addEventListener("click", () => {
+              openPopup(item.name, item.artist);
+            });
+          } else if (item.kind === "album") {
+            btn.addEventListener("click", () => {
+              openAlbumPopup(item.id, item.name);
+            });
+          }
+    
+          results.appendChild(div);
+        });
+      })
+      .catch(err => {
+        console.error("Greška pri dohvaćanju rezultata:", err);
+        results.innerHTML = "<p>Greška pri dohvaćanju rezultata.</p>";
+      });
+    }
+    const stars = document.querySelectorAll("#starRating span");
+  let currentRating = 0;
+
+  stars.forEach(star => {
+    star.addEventListener("mouseover", () => {
+      const val = parseInt(star.getAttribute("data-value"));
+      highlightStars(val);
+    });
+    star.addEventListener("mouseout", () => {
+      highlightStars(currentRating);
+    });
+    star.addEventListener("click", () => {
+      currentRating = parseInt(star.getAttribute("data-value"));
+      document.getElementById("popupRating").value = currentRating;
+      highlightStars(currentRating);
+    });
+  });
+
+  function highlightStars(rating) {
+    stars.forEach(star => {
+      const val = parseInt(star.getAttribute("data-value"));
+      star.classList.toggle("selected", val <= rating);
+    });
+  }
+  function toggleMenu() {
+  const menu = document.getElementById("mainMenu");
+  menu.classList.toggle("open");
+}
+    </script>
+    
+</body>
+</html>
